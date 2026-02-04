@@ -1,28 +1,38 @@
 import { VersionedTransaction } from '@solana/web3.js';
-import { FEE_ACCOUNT, getJupiterHeaders, JUPITER_API_BASE, jupiterLog, PLATFORM_FEE_BPS } from './config';
+import {
+  createJupiterApiClient,
+  QuoteResponse as JupiterQuoteResponse,
+  ResponseError,
+} from '@jup-ag/api';
+import { FEE_ACCOUNT, JUPITER_API_KEY, jupiterLog, PLATFORM_FEE_BPS } from './config';
 import { MintAddress, Amount, Result, type ValidationError } from '../types/branded';
+
+// ============================================================================
+// JUPITER API CLIENT (Lazy initialization for testability)
+// ============================================================================
+
+let _jupiterApi: ReturnType<typeof createJupiterApiClient> | null = null;
+
+function getJupiterApi() {
+  if (!_jupiterApi) {
+    _jupiterApi = createJupiterApiClient({
+      apiKey: JUPITER_API_KEY || undefined,
+    });
+  }
+  return _jupiterApi;
+}
+
+// For testing: reset the client
+export function _resetJupiterClient() {
+  _jupiterApi = null;
+}
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export type QuoteResponse = {
-  readonly inputMint: string;
-  readonly outputMint: string;
-  readonly inAmount: string;
-  readonly outAmount: string;
-  readonly priceImpactPct: string;
-  readonly slippageBps?: number;
-  readonly platformFee?: {
-    readonly amount: string;
-    readonly feeBps: number;
-  };
-  readonly routePlan: readonly {
-    readonly swapInfo: {
-      readonly label: string;
-    };
-  }[];
-};
+// Re-export Jupiter's QuoteResponse for external use
+export type QuoteResponse = JupiterQuoteResponse;
 
 export type SwapParams = {
   readonly inputMint: string;
@@ -104,49 +114,41 @@ export async function getQuoteSafe(
   params: TypedSwapParams
 ): Promise<Result<QuoteResponse, JupiterError>> {
   const slippage = params.slippageBps ?? 50;
-
-  // Build query params immutably
-  const baseParams = [
-    `inputMint=${params.inputMint}`,
-    `outputMint=${params.outputMint}`,
-    `amount=${params.amount}`,
-    `slippageBps=${slippage}`,
-  ];
-
   const feeBps = params.platformFeeBps ?? PLATFORM_FEE_BPS;
-  const queryParams =
-    FEE_ACCOUNT && feeBps > 0
-      ? [...baseParams, `platformFeeBps=${feeBps}`]
-      : baseParams;
-
-  const url = `${JUPITER_API_BASE}/swap/v1/quote?${queryParams.join('&')}`;
 
   try {
-    jupiterLog('Fetching quote:', url);
-
-    const res = await fetch(url, {
-      headers: getJupiterHeaders(),
+    jupiterLog('Fetching quote via @jup-ag/api:', {
+      inputMint: params.inputMint,
+      outputMint: params.outputMint,
+      amount: params.amount,
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      jupiterLog('Quote error:', res.status, text);
+    const quote = await getJupiterApi().quoteGet({
+      inputMint: params.inputMint,
+      outputMint: params.outputMint,
+      amount: Number(params.amount),
+      slippageBps: slippage,
+      platformFeeBps: FEE_ACCOUNT && feeBps > 0 ? feeBps : undefined,
+    });
 
-      if (res.status === 429) {
+    jupiterLog('Quote success:', quote.outAmount);
+    return Result.ok(quote);
+  } catch (error) {
+    if (error instanceof ResponseError) {
+      jupiterLog('API error:', error.response.status);
+
+      if (error.response.status === 429) {
         return Result.err({ type: 'RATE_LIMITED' });
       }
 
+      const text = await error.response.text().catch(() => 'Unknown error');
       return Result.err({
         type: 'API_ERROR',
-        status: res.status,
+        status: error.response.status,
         message: text,
       });
     }
 
-    const data = await res.json();
-    jupiterLog('Quote success:', data.outAmount);
-    return Result.ok(data);
-  } catch (error) {
     jupiterLog('Network error:', error);
     return Result.err({
       type: 'NETWORK_ERROR',
@@ -217,39 +219,27 @@ export async function getQuote(params: SwapParams): Promise<QuoteResponse> {
   }
 
   const slippage = params.slippageBps ?? 50;
-  const queryParams = [
-    `inputMint=${params.inputMint}`,
-    `outputMint=${params.outputMint}`,
-    `amount=${params.amount}`,
-    `slippageBps=${slippage}`,
-  ];
-
-  // Platform Fee - use dynamic fee from SKR tier, or default
-  // Only add if FEE_ACCOUNT is configured AND fee > 0
   const feeBps = params.platformFeeBps ?? PLATFORM_FEE_BPS;
-  if (FEE_ACCOUNT && feeBps > 0) {
-    queryParams.push(`platformFeeBps=${feeBps}`);
-  }
-
-  const url = `${JUPITER_API_BASE}/swap/v1/quote?${queryParams.join('&')}`;
 
   try {
-    jupiterLog('Fetching quote:', url);
+    jupiterLog('Fetching quote via @jup-ag/api:', params);
 
-    const res = await fetch(url, {
-      headers: getJupiterHeaders(),
+    const quote = await getJupiterApi().quoteGet({
+      inputMint: params.inputMint,
+      outputMint: params.outputMint,
+      amount: Number(params.amount),
+      slippageBps: slippage,
+      platformFeeBps: FEE_ACCOUNT && feeBps > 0 ? feeBps : undefined,
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      jupiterLog('Quote error:', res.status, text);
-      throw new Error(`Quote failed: ${res.status} - ${text}`);
-    }
-    const data = await res.json();
-    jupiterLog('Quote success:', data.outAmount);
-    return data;
+    jupiterLog('Quote success:', quote.outAmount);
+    return quote;
   } catch (error) {
-    jupiterLog('Network error:', error);
+    jupiterLog('Quote error:', error);
+    if (error instanceof ResponseError) {
+      const text = await error.response.text().catch(() => 'Unknown error');
+      throw new Error(`Quote failed: ${error.response.status} - ${text}`);
+    }
     if (error instanceof Error) {
       throw new Error(`Jupiter API Error: ${error.message}`);
     }
@@ -261,30 +251,27 @@ export async function getSwapTransaction(
   quote: QuoteResponse,
   userPublicKey: string
 ): Promise<VersionedTransaction> {
-  const body: Record<string, unknown> = {
-    quoteResponse: quote,
-    userPublicKey,
-    wrapAndUnwrapSol: true,
-  };
+  try {
+    jupiterLog('Getting swap transaction via @jup-ag/api');
 
-  // Fee Account - only add if configured
-  if (FEE_ACCOUNT) {
-    body.feeAccount = FEE_ACCOUNT;
+    const swapResponse = await getJupiterApi().swapPost({
+      swapRequest: {
+        quoteResponse: quote,
+        userPublicKey,
+        wrapAndUnwrapSol: true,
+        feeAccount: FEE_ACCOUNT || undefined,
+      },
+    });
+
+    jupiterLog('Swap transaction received');
+    const txBuffer = Buffer.from(swapResponse.swapTransaction, 'base64');
+    return VersionedTransaction.deserialize(txBuffer);
+  } catch (error) {
+    jupiterLog('Swap error:', error);
+    if (error instanceof ResponseError) {
+      const text = await error.response.text().catch(() => 'Unknown error');
+      throw new Error(`Swap failed: ${error.response.status} - ${text}`);
+    }
+    throw error;
   }
-
-  const res = await fetch(`${JUPITER_API_BASE}/swap/v1/swap`, {
-    method: 'POST',
-    headers: getJupiterHeaders(),
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    jupiterLog('Swap error:', res.status, text);
-    throw new Error(`Swap failed: ${res.status}`);
-  }
-
-  const { swapTransaction } = await res.json();
-  const txBuffer = Buffer.from(swapTransaction, 'base64');
-  return VersionedTransaction.deserialize(txBuffer);
 }

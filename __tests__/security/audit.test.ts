@@ -127,13 +127,13 @@ describe('Security Audit - Input Validation', () => {
   });
 
   describe('URL parameter sanitization', () => {
-    it('should not concatenate user input directly into URLs', () => {
+    it('should use official Jupiter SDK for API calls', () => {
       const quoteFile = path.join(APP_DIR, 'jupiter/quote.ts');
       const content = readFile(quoteFile);
 
-      // Should use URL parameters array, not string concatenation with user input
-      expect(content).toContain('queryParams');
-      expect(content).toContain('.join(');
+      // Should use official @jup-ag/api SDK which handles URL building safely
+      expect(content).toContain('createJupiterApiClient');
+      expect(content).toContain('getJupiterApi().quoteGet');
     });
   });
 });
