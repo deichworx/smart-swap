@@ -2,48 +2,49 @@
 
 ## Übersicht
 
-Jupiter ist der führende Swap-Aggregator auf Solana. Wir nutzen die v1 API mit Authentifizierung für beste Routen und Preise.
+Smart Swap nutzt das offizielle **@jup-ag/api** SDK für die Jupiter Integration. Das SDK bietet typisierte API-Aufrufe und wird von Jupiter aktiv gepflegt.
 
-## API Konfiguration
+## Installation
 
-### Base URL & Authentication
-
-```typescript
-// app/jupiter/config.ts
-export const JUPITER_API_KEY = 'dein-api-key';
-export const JUPITER_API_BASE = 'https://api.jup.ag';
-
-export function getJupiterHeaders(): Record<string, string> {
-  return {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'x-api-key': JUPITER_API_KEY,
-  };
-}
+```bash
+npm install @jup-ag/api
 ```
 
-**Wichtig:** Die alte Domain `quote-api.jup.ag` ist deprecated. Alle Requests gehen an `api.jup.ag` mit API-Key Header.
+## API Client
+
+```typescript
+// app/jupiter/quote.ts
+import { createJupiterApiClient } from '@jup-ag/api';
+
+const jupiterApi = createJupiterApiClient({
+  apiKey: process.env.EXPO_PUBLIC_JUPITER_API_KEY || undefined,
+});
+```
 
 ## API Flow
 
 ```
-┌─────────┐   GET /swap/v1/quote   ┌─────────┐
-│   App   │ ──────────────────────►│ Jupiter │
-└─────────┘    + x-api-key         │   API   │
-     │                             └─────────┘
-     │      QuoteResponse               │
-     │◄─────────────────────────────────┘
-     │
-     │    POST /swap/v1/swap
-     │─────────────────────────────────►
-     │       + x-api-key                │
-     │   VersionedTransaction           │
-     │◄─────────────────────────────────┘
-     │
-     ▼
-┌─────────┐
-│ Wallet  │ ── sign ──► Blockchain
-└─────────┘
+┌─────────────┐                      ┌─────────────┐
+│  Smart Swap │                      │   Jupiter   │
+│     App     │                      │     API     │
+└──────┬──────┘                      └──────┬──────┘
+       │                                    │
+       │  jupiterApi.quoteGet({...})        │
+       │───────────────────────────────────►│
+       │                                    │
+       │         QuoteResponse              │
+       │◄───────────────────────────────────│
+       │                                    │
+       │  jupiterApi.swapPost({...})        │
+       │───────────────────────────────────►│
+       │                                    │
+       │      SwapResponse (base64 tx)      │
+       │◄───────────────────────────────────│
+       │                                    │
+       ▼
+┌─────────────┐
+│   Wallet    │ ── sign & send ──► Blockchain
+└─────────────┘
 ```
 
 ## Implementation
@@ -52,55 +53,77 @@ export function getJupiterHeaders(): Record<string, string> {
 
 | Datei | Zweck |
 |-------|-------|
-| `app/jupiter/config.ts` | API Key & Headers |
-| `app/jupiter/quote.ts` | Quote & Swap Transactions |
+| `app/jupiter/config.ts` | API Key & Logging |
+| `app/jupiter/quote.ts` | Quote & Swap via SDK |
 | `app/jupiter/tokenLists.ts` | Token Liste & Search |
 | `app/jupiter/tokens.ts` | Formatting Utilities |
+| `app/jupiter/fees.ts` | SKR Tier Fee Calculation |
 
 ### Quote holen
 
 ```typescript
-import { getQuote } from './jupiter/quote';
+import { getQuote } from '@/app/jupiter/quote';
 
 const quote = await getQuote({
   inputMint: 'So11111111111111111111111111111111111111112', // SOL
   outputMint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
   amount: '1000000000', // 1 SOL in Lamports
-  slippageBps: 50, // 0.5% Slippage
+  slippageBps: 50, // 0.5%
+  platformFeeBps: 15, // Dynamic fee from SKR tier
 });
 ```
 
 ### Swap Transaction erstellen
 
 ```typescript
-import { getSwapTransaction } from './jupiter/quote';
+import { getSwapTransaction } from '@/app/jupiter/quote';
 
 const tx = await getSwapTransaction(quote, userPublicKey);
 const signature = await wallet.signAndSendTransaction(tx);
 ```
 
+### Safe API (Result-based)
+
+Für explizites Error Handling:
+
+```typescript
+import { getQuoteSafe, validateSwapParams } from '@/app/jupiter/quote';
+
+const paramsResult = validateSwapParams(rawParams);
+if (!paramsResult.ok) {
+  console.error(formatJupiterError(paramsResult.error));
+  return;
+}
+
+const quoteResult = await getQuoteSafe(paramsResult.value);
+if (!quoteResult.ok) {
+  console.error(formatJupiterError(quoteResult.error));
+  return;
+}
+
+const quote = quoteResult.value;
+```
+
+## SDK vs. Direct API
+
+| Aspekt | @jup-ag/api SDK | Direct fetch() |
+|--------|-----------------|----------------|
+| **Status** | Offiziell empfohlen | Funktioniert |
+| **Types** | Vollständig typisiert | Manuell |
+| **Updates** | Automatisch via npm | Manuell |
+| **URL-Handling** | Intern sicher | Selbst bauen |
+
+**Migration (Feb 2026):** Von direkten fetch()-Calls auf das offizielle SDK migriert.
+
 ## Token Liste
 
 ### Dynamische Token-Liste
 
-Tokens werden dynamisch von Jupiter geladen und gecached:
-
 ```typescript
 // app/jupiter/tokenLists.ts
-
-// Cached Token List (24h TTL)
-const tokens = await fetchTokenList(); // /tokens/v1/strict
-
-// Live Search (debounced)
-const results = await searchTokens('BONK'); // /tokens/v2/search
+const tokens = await fetchTokenList(); // /tokens/v1/strict (24h cached)
+const results = await searchTokens('BONK'); // /tokens/v2/search (live)
 ```
-
-### Token Cache
-
-| Key | TTL | Inhalt |
-|-----|-----|--------|
-| `@token_cache` | 24h | Jupiter Token List |
-| `@favorite_tokens` | Persistent | User Favoriten (Mint Addresses) |
 
 ### Fallback Tokens
 
@@ -113,97 +136,74 @@ Bei API-Fehlern werden hardcodierte Tokens verwendet:
 | USDT | `Es9v...NYB` | 6 |
 | BONK | `DezX...263` | 5 |
 | JUP | `JUPy...vCN` | 6 |
-| WIF | `EKpQ...jm` | 6 |
-| RAY | `4k3D...X6R` | 6 |
 
-### Token Search API (v2)
+## Platform Fee & Loyalty
 
-Die v2 Search API hat andere Feldnamen als v1:
+### SKR-basierte Fees
 
 ```typescript
-// v2 Response
-{
-  id: string;        // Mint Address (nicht "address")
-  symbol: string;
-  name: string;
-  decimals: number;
-  icon?: string;     // Logo URL (nicht "logoURI")
-  isVerified?: boolean;
-}
+// app/jupiter/fees.ts
+import { calculateFeeForTier, getTierForBalance } from '@/app/jupiter/fees';
+
+const tier = getTierForBalance(skrBalance); // O(1) lookup
+const feeBps = calculateFeeForTier(tier, hasSGT);
+
+// Beispiel: 100K SKR + SGT = 0.13% - 0.05% = 0.08%
 ```
 
-## Platform Fee
+### Fee-Tabelle
 
-### Konfiguration
+| Tier | SKR Required | Base Fee | Mit SGT |
+|------|--------------|----------|---------|
+| Explorer | 0 | 0.25% | 0.20% |
+| Mythic | 2M | FREE | FREE |
 
-```typescript
-// app/jupiter/quote.ts
-export const FEE_ACCOUNT = 'DEINE_WALLET_ADRESSE'; // TODO: Vor Production setzen
-export const PLATFORM_FEE_BPS = 25; // 0.25%
-```
+Siehe [README.md](../README.md) für alle 15 Tiers.
 
-### Wie es funktioniert
-
-1. `platformFeeBps` wird an Quote-Request angehängt
-2. Jupiter berechnet Fee in Quote-Response
-3. `feeAccount` wird an Swap-Request angehängt
-4. Jupiter erstellt Transaction mit Fee-Transfer
-
-**Hinweis:** Fees sind nur aktiv wenn `FEE_ACCOUNT` konfiguriert ist.
-
-### Fee-Berechnung
-
-| BPS | Prozent | Bei 100 USDC Swap |
-|-----|---------|-------------------|
-| 10 | 0.1% | 0.10 USDC |
-| 25 | 0.25% | 0.25 USDC |
-| 30 | 0.3% | 0.30 USDC |
-
-## Helper Functions
+### Fee Account
 
 ```typescript
-import { formatTokenAmount, parseTokenAmount } from './jupiter/tokens';
+// .env
+EXPO_PUBLIC_FEE_ACCOUNT=your-wallet-address
 
-// Display: Lamports → Human readable
-formatTokenAmount('1000000000', 9); // "1"
-
-// Input: Human readable → Lamports
-parseTokenAmount('1.5', 9); // "1500000000"
+// Nur wenn gesetzt werden Fees erhoben
 ```
 
 ## Error Handling
 
+### Error Types (Discriminated Union)
+
+```typescript
+type JupiterError =
+  | { type: 'VALIDATION_ERROR'; field: string; error: ValidationError }
+  | { type: 'API_ERROR'; status: number; message: string }
+  | { type: 'NETWORK_ERROR'; message: string }
+  | { type: 'RATE_LIMITED'; retryAfter?: number }
+  | { type: 'NO_ROUTE'; reason: string };
+```
+
+### Häufige Fehler
+
 | Error | Ursache | Lösung |
 |-------|---------|--------|
-| `401 Unauthorized` | Fehlender/ungültiger API Key | API Key in config.ts prüfen |
-| `Quote failed: 400` | Ungültiger Token/Amount | Inputs prüfen, Mint Address validieren |
-| `Quote failed: 429` | Rate Limit | Retry mit Backoff |
-| `Swap failed: 400` | Quote expired | Neuen Quote holen |
-| `Insufficient funds` | Nicht genug Balance | User informieren |
-| `outputMint=undefined` | v2 API Mapping Fehler | `id` statt `address` verwenden |
+| `ResponseError (401)` | Ungültiger API Key | Key in .env prüfen |
+| `ResponseError (429)` | Rate Limit | Retry mit Backoff |
+| `VALIDATION_ERROR` | Ungültige Mint/Amount | Input validieren |
+| `NO_ROUTE` | Kein Swap-Pfad | Andere Token-Kombination |
 
 ## API Limits
 
-| Tier | Rate Limit | Notiz |
-|------|------------|-------|
-| Free | ~60 req/min | Für Development |
-| Paid | Höher | Für Production empfohlen |
+| Tier | Rate Limit |
+|------|------------|
+| Free | 1 req/sec |
+| Paid | Höher |
 
 - Quote Validity: ~30 Sekunden
 - Auto-Refresh: Alle 10s im Swap Screen
-- Debouncing: 500ms bei Input-Änderungen
-
-## Endpoints
-
-| Endpoint | Methode | Zweck |
-|----------|---------|-------|
-| `/swap/v1/quote` | GET | Quote abrufen |
-| `/swap/v1/swap` | POST | Transaction bauen |
-| `/tokens/v1/strict` | GET | Verified Token List |
-| `/tokens/v2/search` | GET | Live Token Suche |
 
 ## Ressourcen
 
-- [Jupiter API Docs](https://station.jup.ag/docs/apis/swap-api)
-- [Jupiter GitHub](https://github.com/jup-ag/jupiter-quote-api)
-- [API Dashboard](https://portal.jup.ag/) (für API Keys)
+- [@jup-ag/api (npm)](https://www.npmjs.com/package/@jup-ag/api)
+- [Jupiter API Docs](https://dev.jup.ag/)
+- [API Dashboard](https://portal.jup.ag/)
+- [GitHub: jupiter-quote-api-node](https://github.com/jup-ag/jupiter-quote-api-node)

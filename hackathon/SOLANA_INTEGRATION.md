@@ -110,41 +110,30 @@ if (session) {
 
 ## 2. Jupiter Aggregator Integration
 
-### Quote Fetching
+We use Jupiter's **official TypeScript SDK** (`@jup-ag/api`) for type-safe, maintained API access.
 
-Jupiter provides the best swap routes across all Solana DEXes.
+### SDK Setup
 
 ```typescript
 // app/jupiter/quote.ts
-const JUPITER_API_URL = 'https://api.jup.ag/swap/v1';
+import { createJupiterApiClient, QuoteResponse } from '@jup-ag/api';
 
-export async function getQuote(params: {
-  inputMint: string;
-  outputMint: string;
-  amount: string;
-  slippageBps?: number;
-  platformFeeBps?: number;
-}): Promise<QuoteResponse> {
-  const url = new URL(`${JUPITER_API_URL}/quote`);
-  url.searchParams.set('inputMint', params.inputMint);
-  url.searchParams.set('outputMint', params.outputMint);
-  url.searchParams.set('amount', params.amount);
-  url.searchParams.set('slippageBps', String(params.slippageBps ?? 50));
+const jupiterApi = createJupiterApiClient({
+  apiKey: JUPITER_API_KEY || undefined,
+});
+```
 
-  // Platform fee for loyalty system
-  if (params.platformFeeBps && params.platformFeeBps > 0) {
-    url.searchParams.set('platformFeeBps', String(params.platformFeeBps));
-  }
+### Quote Fetching
 
-  const response = await fetch(url.toString(), {
-    headers: { 'x-api-key': JUPITER_API_KEY },
+```typescript
+export async function getQuote(params: SwapParams): Promise<QuoteResponse> {
+  return jupiterApi.quoteGet({
+    inputMint: params.inputMint,
+    outputMint: params.outputMint,
+    amount: Number(params.amount),
+    slippageBps: params.slippageBps ?? 50,
+    platformFeeBps: params.platformFeeBps, // Dynamic fee from SKR tier
   });
-
-  if (!response.ok) {
-    throw new Error(`Jupiter API error: ${response.status}`);
-  }
-
-  return response.json();
 }
 ```
 
@@ -154,28 +143,30 @@ export async function getQuote(params: {
 export async function getSwapTransaction(
   quote: QuoteResponse,
   userPublicKey: string
-): Promise<Transaction> {
-  const response = await fetch(`${JUPITER_API_URL}/swap`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': JUPITER_API_KEY,
-    },
-    body: JSON.stringify({
+): Promise<VersionedTransaction> {
+  const response = await jupiterApi.swapPost({
+    swapRequest: {
       quoteResponse: quote,
       userPublicKey,
-      dynamicComputeUnitLimit: true,
-      prioritizationFeeLamports: 'auto',
-    }),
+      wrapAndUnwrapSol: true,
+      feeAccount: FEE_ACCOUNT || undefined,
+    },
   });
 
-  const { swapTransaction } = await response.json();
-
   // Deserialize the transaction
-  const tx = Transaction.from(Buffer.from(swapTransaction, 'base64'));
-  return tx;
+  const txBuffer = Buffer.from(response.swapTransaction, 'base64');
+  return VersionedTransaction.deserialize(txBuffer);
 }
 ```
+
+### Why the Official SDK?
+
+| Benefit | Description |
+|---------|-------------|
+| **Type Safety** | Full TypeScript types from OpenAPI spec |
+| **Maintained** | Regular updates from Jupiter team |
+| **Secure** | URL building handled internally |
+| **Simple** | Less boilerplate code |
 
 ### Token List API
 

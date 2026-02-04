@@ -14,7 +14,7 @@ Smart Swap is a native mobile application built with React Native and Expo, desi
 | State | React hooks + Context |
 | Storage | AsyncStorage |
 | Wallet | Solana Mobile Wallet Adapter |
-| DEX | Jupiter Aggregator API v1 |
+| DEX | @jup-ag/api (Official Jupiter SDK) |
 | RPC | Helius (DAS API support) |
 
 ---
@@ -76,25 +76,41 @@ app/
 
 ### 1. Jupiter Integration
 
-**Quote Engine** (`app/jupiter/quote.ts`)
+**Official SDK** (`@jup-ag/api`)
+
+We use Jupiter's official TypeScript SDK for type-safe API calls:
 
 ```typescript
-export async function getQuote(params: QuoteParams): Promise<QuoteResponse> {
-  const url = new URL(`${JUPITER_API_URL}/quote`);
-  url.searchParams.set('inputMint', params.inputMint);
-  url.searchParams.set('outputMint', params.outputMint);
-  url.searchParams.set('amount', params.amount);
-  url.searchParams.set('slippageBps', String(params.slippageBps ?? 50));
+import { createJupiterApiClient } from '@jup-ag/api';
 
-  if (params.platformFeeBps) {
-    url.searchParams.set('platformFeeBps', String(params.platformFeeBps));
-  }
+const jupiterApi = createJupiterApiClient({
+  apiKey: JUPITER_API_KEY || undefined,
+});
 
-  const response = await fetch(url.toString(), {
-    headers: { 'x-api-key': JUPITER_API_KEY },
+export async function getQuote(params: SwapParams): Promise<QuoteResponse> {
+  return jupiterApi.quoteGet({
+    inputMint: params.inputMint,
+    outputMint: params.outputMint,
+    amount: Number(params.amount),
+    slippageBps: params.slippageBps ?? 50,
+    platformFeeBps: params.platformFeeBps,
   });
+}
 
-  return response.json();
+export async function getSwapTransaction(
+  quote: QuoteResponse,
+  userPublicKey: string
+): Promise<VersionedTransaction> {
+  const response = await jupiterApi.swapPost({
+    swapRequest: {
+      quoteResponse: quote,
+      userPublicKey,
+      wrapAndUnwrapSol: true,
+    },
+  });
+  return VersionedTransaction.deserialize(
+    Buffer.from(response.swapTransaction, 'base64')
+  );
 }
 ```
 

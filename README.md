@@ -54,7 +54,7 @@ Smart Swap is a **native mobile application** for Solana that makes token swappi
 | Language | TypeScript (strict mode) |
 | Navigation | React Navigation (native-stack) |
 | Wallet | Solana Mobile Wallet Adapter |
-| DEX | Jupiter Aggregator API v1 |
+| DEX | @jup-ag/api (Official Jupiter SDK) |
 | RPC | Helius (DAS API support) |
 
 ---
