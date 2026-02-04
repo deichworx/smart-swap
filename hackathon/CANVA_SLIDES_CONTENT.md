@@ -1,17 +1,17 @@
-# Canva Pitch Deck - Copy/Paste Content
+# Canva Pitch Deck - Loyalty-First Version
 
 ## Design Settings
 
-**Colors to use:**
+**Colors:**
 - Background: #0A0A0F (dark)
-- Primary Accent: #9945FF (purple)
-- Secondary Accent: #14F195 (green)
+- Primary Accent: #9945FF (Solana purple)
+- Secondary Accent: #14F195 (Solana green)
 - Text Primary: #FFFFFF
 - Text Secondary: #A0A0A0
 
 **Fonts:**
 - Headlines: Inter Bold or SF Pro Bold
-- Body: Inter Regular or SF Pro Regular
+- Body: Inter Regular
 
 ---
 
@@ -24,15 +24,15 @@ Smart Swap
 
 **Subheadline:**
 ```
-One-Tap Token Swaps on Solana Mobile
+Trade More. Pay Less.
 ```
 
 **Bottom text:**
 ```
-Monolith Hackathon | Mobile Category
+Solana Seeker Hackathon | Mobile Category
 ```
 
-**Visual:** App icon centered, gradient background purple to dark
+**Visual:** App icon centered, gradient background purple→dark
 
 ---
 
@@ -40,20 +40,20 @@ Monolith Hackathon | Mobile Category
 
 **Headline:**
 ```
-Mobile DEX is Broken
+DEX Apps Don't Reward Loyalty
 ```
 
 **Bullet points:**
 ```
-• Web apps wrapped in mobile shells - slow & laggy
-• Desktop-first interfaces crammed into phones
-• No rewards for loyal users - same fees for everyone
+• Jupiter, Raydium, Orca: Same fees for everyone
+• No matter how much you trade
 • No recognition for Seeker device owners
+• Zero incentive to stay with one app
 ```
 
 **Bottom stat:**
 ```
-78% of crypto users trade on mobile, but apps aren't built for it
+Power traders pay the same 0.3-0.5% as first-time users
 ```
 
 ---
@@ -62,220 +62,169 @@ Mobile DEX is Broken
 
 **Headline:**
 ```
-Native Mobile Trading
+The More You Trade, The Less You Pay
 ```
 
-**Three columns:**
-
-Column 1:
+**Center visual (big):**
 ```
-One-Tap Swaps
-Double-tap confirmation
-for instant execution
+0.25%  →  FREE
 ```
 
-Column 2:
+**Subtext:**
 ```
-Best Rates
-Jupiter aggregation
-across all DEXes
+15-tier loyalty system based on SKR token holdings
++ Automatic bonus for Seeker Genesis Token holders
 ```
 
-Column 3:
+**Powered by:**
 ```
-Loyalty Rewards
-15 tiers from 0.25%
-down to FREE
+Jupiter Aggregation • Same Best Rates • Lower Fees
 ```
 
 ---
 
-## SLIDE 4: Product Demo
+## SLIDE 4: 15-Tier Loyalty System
+
+**Headline:**
+```
+Your Path to Zero Fees
+```
+
+**Two columns:**
+
+Left (tier table):
+```
+Tier          SKR         Fee
+─────────────────────────────
+Explorer      0           0.25%
+Initiate      1K          0.23%
+Seeker        5K          0.21%
+Holder        10K         0.19%
+Believer      25K         0.17%
+Supporter     50K         0.15%
+Advocate      100K        0.13%
+Guardian      150K        0.11%
+Champion      250K        0.09%
+Elite         400K        0.07%
+Master        550K        0.05%
+Legend        750K        0.03%
+Titan         1M          0.02%
+Immortal      1.5M        0.01%
+Mythic        2M          FREE
+```
+
+Right (highlight box):
+```
+SEEKER BONUS
+
+SGT holders get
+-0.05% extra
+
+Automatic detection
+No setup required
+```
+
+---
+
+## SLIDE 5: How It Works
 
 **Headline:**
 ```
 Simple. Fast. Rewarding.
 ```
 
-**Layout:** 4 phone screenshots in a row
+**4 steps with icons:**
 
-Labels under each:
 ```
-Connect | Swap | Confirm | Track
-```
-
-**Caption:**
-```
-From wallet connection to confirmed swap in under 10 seconds
-```
-
----
-
-## SLIDE 5: Campaign Partnerships
-
-**Headline:**
-```
-Campaign Partnerships
-```
-
-**Six cards in 2x3 grid:**
-
-Card 1:
-```
-🐕 BONK Summer
-Meme Season • 3 Monate
-Weekly Airdrops
-```
-
-Card 2:
-```
-🪐 Jupiter Rewards
-DeFi Partner • Quarterly
-2x Points Multiplier
-```
-
-Card 3:
-```
-🚀 Star Atlas
-Gaming • Q4 2026
-Ship NFT Raffle
-```
-
-Card 4:
-```
-💵 USDC Adoption
-Stablecoin • 1 Monat
-0.1% Cashback
-```
-
-Card 5:
-```
-👆 OTD Perpetual
-Eigener Token • Permanent
-Governance + Staking
-```
-
-Card 6:
-```
-🎭 Meme Madness
-Community • Flash Events
-Rare NFTs
-```
-
-**Bottom text:**
-```
-Partner zahlen in Tokens oder USD • Airdrops • NFTs • Fee Discounts
-```
-
----
-
-## SLIDE 6: Loyalty System
-
-**Headline:**
-```
-15-Tier SKR Loyalty
-```
-
-**Two columns:**
-
-Left (tier examples):
-```
-🔍 Explorer     0 SKR      0.25%
-🌱 Initiate     1K SKR     0.23%
-🎯 Seeker       5K SKR     0.21%
-   ...
-👑 Legend       750K SKR   0.03%
-🌈 Mythic       2M SKR     FREE
-```
-
-Right (benefit callout):
-```
-SEEKER BONUS
-📱 +0.05% off
-for SGT holders
+1. CONNECT          2. SWAP            3. CONFIRM         4. EARN
+   Wallet via MWA      Best Jupiter      Double-tap         Lower fees
+                       rates             + haptic           next time
 ```
 
 **Bottom:**
 ```
-Hold more SKR → Pay less fees → Trade more profitably
+From wallet to confirmed swap in under 10 seconds
 ```
 
 ---
 
-## SLIDE 6: Technical Architecture
+## SLIDE 6: Built for Seeker
 
 **Headline:**
 ```
-Built on Solana
+Native dApp Store Experience
 ```
 
-**Diagram (use Canva shapes):**
+**Four feature cards:**
 
 ```
-        Smart Swap App
-    ┌─────────────────────┐
-    │  Swap │ History │   │
-    │  Loyalty │ Settings │
-    └──────────┬──────────┘
-               │
-    ┌──────────┼──────────┐
-    ▼          ▼          ▼
- Jupiter    Solana      MWA
-   API       RPC      Wallet
+📱 SGT Auto-Detection
+Helius DAS API scans your wallet
+Seeker owners get instant bonus
+
+🔗 Mobile Wallet Adapter
+Native MWA integration
+No browser, no extensions
+
+⚡ 60 FPS Performance
+React Native optimized
+Smooth animations, haptic feedback
+
+🏪 dApp Store Ready
+Follows all Solana guidelines
+Ready for distribution
+```
+
+---
+
+## SLIDE 7: Technical Stack
+
+**Headline:**
+```
+Powered by Jupiter
+```
+
+**Architecture diagram:**
+```
+┌─────────────────────────────────┐
+│         Smart Swap App          │
+│    ┌───────┬───────┬───────┐   │
+│    │ Swap  │Loyalty│History│   │
+│    └───┬───┴───┬───┴───┬───┘   │
+└────────┼───────┼───────┼────────┘
+         │       │       │
+    ┌────▼──┐ ┌──▼──┐ ┌──▼───┐
+    │Jupiter│ │Helius│ │ MWA  │
+    │  API  │ │ DAS  │ │Wallet│
+    └───────┘ └─────┘ └──────┘
 ```
 
 **Tech badges:**
 ```
-React Native | TypeScript | Jupiter | Helius | MWA
+@jup-ag/api • React Native • TypeScript • Helius • MWA
 ```
 
 ---
 
-## SLIDE 7: Seeker Integration
+## SLIDE 8: Performance
 
 **Headline:**
 ```
-Built for Seeker
+Native Speed
 ```
 
-**Four points:**
-
+**Three metric boxes:**
 ```
-📱 SGT Detection
-Automatic Seeker Genesis Token scanning
-
-🔗 Mobile Wallet Adapter
-Native MWA for seamless signing
-
-⚡ Hardware Optimized
-Tuned for Seeker's Snapdragon 6 Gen 1
-
-🏪 dApp Store Ready
-Follows all submission guidelines
+< 25 MB          < 2 sec          60 FPS
+App Size         Cold Start       Animations
 ```
 
----
-
-## SLIDE 8: Mobile Performance
-
-**Headline:**
+**Optimizations:**
 ```
-Native Performance
-```
-
-**Metrics in boxes:**
-
-```
-< 25 MB        < 2 sec       60 FPS
-App Size       Cold Start    Animations
-```
-
-**Optimization highlights:**
-```
+✓ Official Jupiter SDK (@jup-ag/api)
+✓ O(1) fee tier lookups
 ✓ Memoized components
 ✓ Native driver animations
-✓ Virtualized lists
-✓ O(1) data lookups
 ```
 
 ---
@@ -284,19 +233,19 @@ App Size       Cold Start    Animations
 
 **Headline:**
 ```
-$10B+ Daily DEX Volume
+$10B+ Daily DEX Volume on Solana
 ```
 
-**Stats:**
+**Three stats:**
 ```
-100K+          140K+         78%
-Saga sold      Seeker        Mobile
-               pre-orders    crypto users
+100K+              140K+              78%
+Saga devices       Seeker             Mobile
+sold               pre-orders         crypto users
 ```
 
 **Positioning:**
 ```
-First loyalty-integrated native swap app for Seeker
+First loyalty-integrated swap app for Seeker
 ```
 
 ---
@@ -314,7 +263,7 @@ Platform fees: 0.01% - 0.25% per swap
 (Based on user's loyalty tier)
 ```
 
-**Distribution pie chart:**
+**Revenue distribution:**
 ```
 50% Treasury
 30% Development
@@ -334,58 +283,44 @@ What's Next
 
 ```
 NOW                    Q2 2026               Q3 2026
-──────────────────────────────────────────────────────►
+─────────────────────────────────────────────────────►
 
-Hackathon MVP          dApp Store            Power Features
-• Core swaps           • Public beta         • Limit orders
-• 15-tier loyalty      • Portfolio view      • DCA automation
-• SGT detection        • Advanced search     • Price alerts
+Hackathon MVP          dApp Store            Campaign Platform
+• 15-tier loyalty      • Public beta         • Partner airdrops
+• SGT detection        • Portfolio view      • BONK, Jupiter rewards
+• Jupiter swaps        • Token search        • Branded campaigns
+```
+
+**Future vision box:**
+```
+CAMPAIGN PLATFORM
+Partners pay in tokens for featured placement
+Users earn airdrops through Smart Swap
 ```
 
 ---
 
-## SLIDE 12: Demo
-
-**Headline:**
-```
-See It In Action
-```
-
-**Center:**
-```
-[QR Code to YouTube video]
-
-or visit: [your-demo-link]
-```
-
-**Bottom:**
-```
-Try the beta: [TestFlight/APK link]
-```
-
----
-
-## SLIDE 13: Team
+## SLIDE 12: Team
 
 **Headline:**
 ```
 Built By
 ```
 
-**Your info:**
+**Profile:**
 ```
-[Your Name]
+Holger Brinkmann
 Solo Developer
 
-[Your background - 1 line]
+Full-stack engineer with focus on
+DeFi and mobile development
 
-GitHub: @yourhandle
-Twitter: @yourhandle
+GitHub: @deichworx
 ```
 
 ---
 
-## SLIDE 14: Thank You
+## SLIDE 13: Call to Action
 
 **Headline:**
 ```
@@ -394,14 +329,13 @@ Smart Swap
 
 **Tagline:**
 ```
-The fastest way to swap on Seeker
+Trade More. Pay Less.
 ```
 
-**Contact:**
+**Links:**
 ```
-[your email]
-@yourhandle
-github.com/yourrepo
+GitHub: github.com/deichworx/smart-swap
+Demo: [YouTube link]
 ```
 
 **Bottom:**
@@ -411,15 +345,14 @@ Questions?
 
 ---
 
-## Canva Template Recommendations
+## Canva Tips
 
-1. **Search for:** "Dark tech pitch deck" or "Startup pitch dark"
-2. **Look for:** Minimal design, dark backgrounds
-3. **Customize:** Replace accent colors with #9945FF and #14F195
+1. **Search:** "Dark tech pitch deck" or "Startup pitch dark"
+2. **Replace colors:** Use #9945FF (purple) and #14F195 (green)
+3. **Keep text minimal:** Let the numbers speak
 
-## Export Settings
+## Export
 
 - Format: PDF
 - Quality: High
-- Include: Bleed if available
-- Save as: `SmartSwap_PitchDeck_Monolith.pdf`
+- Filename: `SmartSwap_PitchDeck_Seeker.pdf`
