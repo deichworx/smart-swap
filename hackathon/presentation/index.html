@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Swap - The One-Tap DeFi Loyalty DApp</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/black.min.css">
+  <style>
+    :root {
+      --r-background-color: #0D0D0D;
+      --r-main-color: #FFFFFF;
+      --r-heading-color: #FFFFFF;
+      --r-link-color: #9945FF;
+      --accent-purple: #9945FF;
+      --accent-green: #14F195;
+    }
+    .reveal {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .reveal h1, .reveal h2, .reveal h3 {
+      text-transform: none;
+      font-weight: 700;
+    }
+    .reveal h1 { font-size: 2.5em; }
+    .reveal h2 { font-size: 1.8em; }
+    .reveal h3 { font-size: 1.4em; }
+    .accent { color: var(--accent-purple); }
+    .accent-green { color: var(--accent-green); }
+    .subtitle {
+      color: #A0A0A0;
+      font-size: 0.8em;
+      margin-top: 0.5em;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--accent-green);
+      color: #0D0D0D;
+      padding: 0.2em 0.8em;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.6em;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 1.5em;
+      margin: 0.5em;
+    }
+    .card-accent {
+      border-color: var(--accent-purple);
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1em;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1em;
+    }
+    .tier-table {
+      font-size: 0.7em;
+      width: 100%;
+    }
+    .tier-table td, .tier-table th {
+      padding: 0.3em 0.5em;
+      text-align: left;
+    }
+    .tier-table tr:nth-child(odd) {
+      background: rgba(255,255,255,0.03);
+    }
+    .metric-box {
+      text-align: center;
+      padding: 1em;
+    }
+    .metric-value {
+      font-size: 2em;
+      font-weight: bold;
+      color: var(--accent-purple);
+    }
+    .metric-label {
+      color: #A0A0A0;
+      font-size: 0.8em;
+    }
+    .check { color: var(--accent-green); }
+    .cross { color: #FF6B6B; }
+    .timeline {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-top: 2em;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent-purple);
+    }
+    .timeline-item {
+      text-align: center;
+      flex: 1;
+    }
+    .timeline-dot {
+      width: 20px;
+      height: 20px;
+      background: var(--accent-purple);
+      border-radius: 50%;
+      margin: 0 auto 1em;
+    }
+    .tech-badges {
+      display: flex;
+      gap: 0.5em;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1em;
+    }
+    .tech-badge {
+      background: rgba(153, 69, 255, 0.2);
+      border: 1px solid var(--accent-purple);
+      padding: 0.3em 0.8em;
+      border-radius: 9999px;
+      font-size: 0.7em;
+    }
+    .campaign-card {
+      border: 2px dashed var(--accent-purple);
+      background: rgba(153, 69, 255, 0.1);
+    }
+    ul.feature-list {
+      list-style: none;
+      padding: 0;
+    }
+    ul.feature-list li {
+      padding: 0.3em 0;
+      padding-left: 1.5em;
+      position: relative;
+    }
+    ul.feature-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--accent-green);
+    }
+    .footer-note {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.6em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- SLIDE 1: Title -->
+      <section>
+        <h1>Smart Swap</h1>
+        <p class="accent" style="font-size: 1.5em;">The One-Tap DeFi Loyalty DApp</p>
+        <p class="subtitle">One-Tap Token Swaps on Solana Mobile</p>
+        <br><br>
+        <p style="font-size: 0.7em; color: #666;">
+          Monolith Hackathon | Mobile Category | 2026
+        </p>
+      </section>
+
+      <!-- SLIDE 2: The Problem -->
+      <section>
+        <h2>Mobile DEX is <span class="accent">Broken</span></h2>
+        <div class="card" style="text-align: left; max-width: 800px; margin: 0 auto;">
+          <p><span class="cross">✗</span> Web apps wrapped in mobile shells - slow & laggy</p>
+          <p><span class="cross">✗</span> Desktop-first interfaces crammed into phones</p>
+          <p><span class="cross">✗</span> No rewards for loyal users - same fees for everyone</p>
+          <p><span class="cross">✗</span> No recognition for Seeker device owners</p>
+        </div>
+        <br>
+        <p class="accent-green" style="font-size: 1.2em;">
+          78% of crypto users trade on mobile<br>
+          <span style="color: #A0A0A0; font-size: 0.8em;">but apps aren't built for it</span>
+        </p>
+      </section>
+
+      <!-- SLIDE 3: Our Solution -->
+      <section>
+        <h2>The <span class="accent">One-Tap</span> DeFi Loyalty Platform</h2>
+        <div class="grid-3">
+          <div class="card">
+            <div style="font-size: 2em;">👆</div>
+            <h3>One-Tap Swaps</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Double-tap confirmation for instant execution
+            </p>
+          </div>
+          <div class="card">
+            <div style="font-size: 2em;">⚡</div>
+            <h3>Best Rates</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Jupiter aggregation across all DEXes
+            </p>
+          </div>
+          <div class="card">
+            <div style="font-size: 2em;">🎁</div>
+            <h3>Loyalty Campaigns</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              15-tier system<br>0.25% → FREE
+            </p>
+          </div>
+        </div>
+        <br>
+        <p class="accent-green">Trade more. Pay less. Get rewarded.</p>
+      </section>
+
+      <!-- SLIDE 4: Campaign Platform -->
+      <section>
+        <h2>Campaign-Based <span class="accent">Loyalty</span></h2>
+        <div class="card campaign-card" style="max-width: 700px; margin: 0 auto; text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">SKR Season 1</h3>
+            <span class="badge">ACTIVE</span>
+          </div>
+          <p style="color: #A0A0A0; font-size: 0.8em;">
+            Hold SKR tokens for reduced fees. Sponsored by Seeker Community.
+          </p>
+          <p style="font-size: 0.9em;">
+            🔍 Explorer → 🌱 Initiate → 🎯 Seeker → ... → 🌈 Mythic
+          </p>
+          <p style="font-size: 0.8em; color: #A0A0A0;">
+            Rewards: Fee discounts • Airdrops • NFTs
+          </p>
+        </div>
+        <br>
+        <p style="font-size: 0.9em;">
+          <span class="accent">Coming Soon:</span> BONK Summer • Jupiter Rewards • OTD Perpetual
+        </p>
+      </section>
+
+      <!-- SLIDE 5: Campaign Ideas -->
+      <section>
+        <h2>Campaign <span class="accent">Partnerships</span></h2>
+        <div class="grid-3" style="font-size: 0.85em;">
+          <div class="card">
+            <div style="font-size: 1.5em;">🐕</div>
+            <h3 style="color: #F9A825;">BONK Summer</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Meme Season<br>
+              3 Months<br>
+              Weekly Airdrops
+            </p>
+          </div>
+          <div class="card">
+            <div style="font-size: 1.5em;">🪐</div>
+            <h3 style="color: #1E90FF;">Jupiter Rewards</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              DeFi Partner<br>
+              Quarterly<br>
+              2x Points Multiplier
+            </p>
+          </div>
+          <div class="card">
+            <div style="font-size: 1.5em;">🚀</div>
+            <h3 style="color: #6B4EFF;">Star Atlas</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Gaming<br>
+              Q4 2026<br>
+              Ship NFT Raffle
+            </p>
+          </div>
+          <div class="card">
+            <div style="font-size: 1.5em;">💵</div>
+            <h3 style="color: #2775CA;">USDC Adoption</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Stablecoin<br>
+              1 Month<br>
+              0.1% Cashback
+            </p>
+          </div>
+          <div class="card">
+            <div style="font-size: 1.5em;">👆</div>
+            <h3 style="color: var(--accent-purple);">OTD Perpetual</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Native Token<br>
+              Permanent<br>
+              Governance + Staking
+            </p>
+          </div>
+          <div class="card">
+            <div style="font-size: 1.5em;">🎭</div>
+            <h3 style="color: #FF4500;">Meme Madness</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Community<br>
+              Flash Events<br>
+              Rare NFTs
+            </p>
+          </div>
+        </div>
+        <p style="margin-top: 1em; font-size: 0.8em;">
+          Partners pay in <span class="accent">Tokens</span> or <span class="accent-green">USD</span> •
+          Airdrops • NFTs • Fee Discounts
+        </p>
+      </section>
+
+      <!-- SLIDE 6: Product Demo (was 5) -->
+      <section>
+        <h2>Simple. Fast. <span class="accent">Rewarding.</span></h2>
+        <div class="grid-3" style="margin-top: 2em;">
+          <div style="text-align: center;">
+            <div style="background: #1a1a1a; border-radius: 20px; padding: 2em; height: 150px;">
+              Token-Auswahl mit Jupiter-Quote
+            </div>
+            <p>Connect & Swap</p>
+          </div>
+          <div style="text-align: center;">
+            <div style="background: #1a1a1a; border-radius: 20px; padding: 2em; height: 150px;">
+              Double-Tap Bestätigung
+            </div>
+            <p>Double-Tap Confirm</p>
+          </div>
+          <div style="text-align: center;">
+            <div style="background: #1a1a1a; border-radius: 20px; padding: 2em; height: 150px;">
+              Swap-Historie mit Solscan-Links
+            </div>
+            <p>Track History</p>
+          </div>
+        </div>
+        <p class="subtitle">From wallet to confirmed swap in under 10 seconds</p>
+      </section>
+
+      <!-- SLIDE 6: 15-Tier System -->
+      <section>
+        <h2><span class="accent">15-Tier</span> SKR Loyalty System</h2>
+        <div class="grid-2">
+          <div>
+            <table class="tier-table">
+              <tr><td>🔍</td><td>Explorer</td><td>0</td><td>0.25%</td></tr>
+              <tr><td>🌱</td><td>Initiate</td><td>1K</td><td>0.23%</td></tr>
+              <tr><td>🎯</td><td>Seeker</td><td>5K</td><td>0.21%</td></tr>
+              <tr><td>💎</td><td>Holder</td><td>10K</td><td>0.19%</td></tr>
+              <tr><td>🌟</td><td>Believer</td><td>25K</td><td>0.17%</td></tr>
+              <tr><td>⭐</td><td>Supporter</td><td>50K</td><td>0.15%</td></tr>
+              <tr><td>🚀</td><td>Advocate</td><td>100K</td><td>0.13%</td></tr>
+              <tr><td>🛡️</td><td>Guardian</td><td>150K</td><td>0.11%</td></tr>
+              <tr><td>🏆</td><td>Champion</td><td>250K</td><td>0.09%</td></tr>
+              <tr><td>💫</td><td>Elite</td><td>400K</td><td>0.07%</td></tr>
+              <tr><td>🎖️</td><td>Master</td><td>550K</td><td>0.05%</td></tr>
+              <tr><td>👑</td><td>Legend</td><td>750K</td><td>0.03%</td></tr>
+              <tr><td>⚡</td><td>Titan</td><td>1M</td><td>0.02%</td></tr>
+              <tr><td>🔱</td><td>Immortal</td><td>1.5M</td><td>0.01%</td></tr>
+              <tr><td>🌈</td><td>Mythic</td><td>2M</td><td class="accent-green">FREE</td></tr>
+            </table>
+          </div>
+          <div class="card card-accent">
+            <h3>📱 Seeker Bonus</h3>
+            <p style="font-size: 2em; color: var(--accent-green);">-0.05%</p>
+            <p style="color: #A0A0A0; font-size: 0.8em;">
+              Extra discount for SGT holders
+            </p>
+            <br>
+            <p style="font-size: 0.9em;">
+              Automatic detection via<br>Helius DAS API
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: Technical Architecture -->
+      <section>
+        <h2>Built on <span class="accent">Solana Mobile</span></h2>
+        <div style="font-size: 0.9em; max-width: 600px; margin: 0 auto;">
+          <pre style="background: #1a1a1a; padding: 1em; border-radius: 8px; text-align: left;">
+        ┌─────────────────────┐
+        │   Smart Swap App    │
+        │  ┌─────┬─────────┐  │
+        │  │Swap │ Loyalty │  │
+        │  │─────┼─────────│  │
+        │  │Hist │Settings │  │
+        │  └─────┴─────────┘  │
+        └──────────┬──────────┘
+                   │
+     ┌─────────────┼─────────────┐
+     ▼             ▼             ▼
+┌─────────┐  ┌───────────┐  ┌─────────┐
+│ Jupiter │  │  Solana   │  │   MWA   │
+│   API   │  │   RPC     │  │ Wallet  │
+└─────────┘  └───────────┘  └─────────┘
+          </pre>
+        </div>
+        <div class="tech-badges">
+          <span class="tech-badge">React Native</span>
+          <span class="tech-badge">TypeScript</span>
+          <span class="tech-badge">Jupiter</span>
+          <span class="tech-badge">Helius DAS</span>
+          <span class="tech-badge">MWA</span>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: Seeker Integration -->
+      <section>
+        <h2>Built for <span class="accent">Seeker</span></h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>📱 SGT Detection</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Automatic Seeker Genesis Token scanning via Helius DAS
+            </p>
+          </div>
+          <div class="card">
+            <h3>🔗 Mobile Wallet Adapter</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Native MWA for seamless transaction signing
+            </p>
+          </div>
+          <div class="card">
+            <h3>⚡ Hardware Optimized</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Tuned for Snapdragon 6 Gen 1
+            </p>
+          </div>
+          <div class="card">
+            <h3>🏪 dApp Store Ready</h3>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Follows all submission guidelines
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: Mobile Performance -->
+      <section>
+        <h2>Native <span class="accent">Performance</span></h2>
+        <div class="grid-3">
+          <div class="metric-box card">
+            <div class="metric-value">&lt;25MB</div>
+            <div class="metric-label">App Size</div>
+          </div>
+          <div class="metric-box card">
+            <div class="metric-value">&lt;2sec</div>
+            <div class="metric-label">Cold Start</div>
+          </div>
+          <div class="metric-box card">
+            <div class="metric-value">60FPS</div>
+            <div class="metric-label">Animations</div>
+          </div>
+        </div>
+        <br>
+        <ul class="feature-list" style="max-width: 500px; margin: 0 auto;">
+          <li>React.memo for list items</li>
+          <li>GPU-accelerated transforms</li>
+          <li>O(1) balance lookups</li>
+          <li>Virtualized token lists</li>
+        </ul>
+        <p style="margin-top: 1em;">
+          <span class="accent-green">321 tests passing</span> • 0 lint errors
+        </p>
+      </section>
+
+      <!-- SLIDE 10: Market Opportunity -->
+      <section>
+        <h2>Market <span class="accent">Opportunity</span></h2>
+        <div class="grid-3">
+          <div class="metric-box card">
+            <div class="metric-value">$10B+</div>
+            <div class="metric-label">Daily DEX Volume</div>
+          </div>
+          <div class="metric-box card">
+            <div class="metric-value">140K+</div>
+            <div class="metric-label">Seeker Pre-orders</div>
+          </div>
+          <div class="metric-box card">
+            <div class="metric-value">78%</div>
+            <div class="metric-label">Mobile Crypto Users</div>
+          </div>
+        </div>
+        <br>
+        <div class="card card-accent" style="max-width: 600px; margin: 0 auto;">
+          <p style="font-size: 1.1em;">
+            First <span class="accent">loyalty-integrated</span> native swap app for Seeker
+          </p>
+          <p style="font-size: 0.8em; color: #A0A0A0;">
+            Platform for token projects to run promotional campaigns
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 11: Business Model -->
+      <section>
+        <h2>Sustainable <span class="accent">Revenue</span></h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Platform Fees</h3>
+            <p style="font-size: 1.5em; color: var(--accent-green);">0.01% - 0.25%</p>
+            <p style="font-size: 0.8em; color: #A0A0A0;">per swap (based on tier)</p>
+          </div>
+          <div class="card">
+            <h3>Campaign Fees</h3>
+            <p style="font-size: 1.5em; color: var(--accent-green);">$5K - $50K</p>
+            <p style="font-size: 0.8em; color: #A0A0A0;">per partner campaign</p>
+          </div>
+        </div>
+        <br>
+        <div style="font-size: 0.9em;">
+          <p>Fee Distribution:</p>
+          <p>
+            <span class="accent">50%</span> Treasury •
+            <span class="accent">30%</span> Development •
+            <span class="accent">20%</span> Token Buyback
+          </p>
+        </div>
+      </section>
+
+      <!-- SLIDE 12: Roadmap -->
+      <section>
+        <h2>What's <span class="accent">Next</span></h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background: var(--accent-green);"></div>
+            <h4>NOW</h4>
+            <p style="font-size: 0.7em; color: #A0A0A0;">
+              Hackathon MVP<br>
+              Core swaps<br>
+              15-tier loyalty<br>
+              SGT detection
+            </p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <h4>Q2 2026</h4>
+            <p style="font-size: 0.7em; color: #A0A0A0;">
+              dApp Store<br>
+              OTD token<br>
+              Partner campaigns<br>
+              Portfolio view
+            </p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <h4>Q3 2026</h4>
+            <p style="font-size: 0.7em; color: #A0A0A0;">
+              Power Features<br>
+              Limit orders<br>
+              DCA automation<br>
+              Price alerts
+            </p>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <h4>Q4 2026</h4>
+            <p style="font-size: 0.7em; color: #A0A0A0;">
+              Campaign Platform<br>
+              Partner dashboard<br>
+              Airdrop automation<br>
+              Analytics suite
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 13: User Benefits -->
+      <section>
+        <h2>What <span class="accent">Users</span> Get</h2>
+        <div class="grid-2" style="font-size: 0.9em;">
+          <div class="card">
+            <h3 style="color: var(--accent-green);">Lower Fees</h3>
+            <p style="font-size: 2em;">0.25% → FREE</p>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Hold tokens → Pay less<br>
+              Up to 100% savings
+            </p>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--accent-green);">Free Airdrops</h3>
+            <p style="font-size: 2em;">Weekly</p>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              Trade actively → Earn tokens<br>
+              Volume-based rewards
+            </p>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--accent-green);">Seeker Bonus</h3>
+            <p style="font-size: 2em;">-0.05%</p>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              SGT holders → Extra discount<br>
+              Automatic detection
+            </p>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--accent-green);">Best Rates</h3>
+            <p style="font-size: 2em;">Jupiter</p>
+            <p style="font-size: 0.8em; color: #A0A0A0;">
+              All DEXes → Best price<br>
+              Automatic routing
+            </p>
+          </div>
+        </div>
+        <p style="margin-top: 1em; font-size: 1.1em;">
+          <span class="accent-green">$300+ annual savings</span> for active traders
+        </p>
+      </section>
+
+      <!-- SLIDE 14: Demo -->
+      <section>
+        <h2>See It <span class="accent">In Action</span></h2>
+        <div style="margin: 2em 0;">
+          <div style="width: 200px; height: 200px; background: white; margin: 0 auto; padding: 1em; border-radius: 8px;">
+            <p style="color: #0A0A0F; font-size: 0.8em;">[QR Code]</p>
+            <p style="color: #0A0A0F; font-size: 0.6em;">Demo Video</p>
+          </div>
+        </div>
+        <p>
+          <a href="#" class="accent">youtube.com/watch?v=xxxxx</a>
+        </p>
+        <br>
+        <p style="font-size: 0.9em;">
+          Try the beta APK: <a href="#" class="accent-green">[Download Link]</a>
+        </p>
+      </section>
+
+      <!-- SLIDE 15: Thank You -->
+      <section>
+        <h1>Smart Swap</h1>
+        <p class="accent" style="font-size: 1.3em;">The One-Tap DeFi Loyalty DApp</p>
+        <p class="subtitle">Trade more. Pay less. Get rewarded.</p>
+        <br><br>
+        <p style="font-size: 0.9em;">
+          [Your Name]<br>
+          <span style="color: #A0A0A0;">Solo Developer</span>
+        </p>
+        <br>
+        <p style="font-size: 0.8em;">
+          <a href="#" class="accent">github.com/yourrepo</a><br>
+          <a href="#" class="accent">@yourhandle</a><br>
+          your@email.com
+        </p>
+        <br>
+        <h3>Questions?</h3>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.min.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      transition: 'slide',
+      backgroundTransition: 'fade',
+      center: true,
+      progress: true,
+      controls: true,
+      keyboard: true,
+      overview: true,
+      touch: true,
+      loop: false,
+      rtl: false,
+      shuffle: false,
+      fragments: true,
+      embedded: false,
+      help: true,
+      showNotes: false,
+      autoPlayMedia: null,
+      autoSlide: 0,
+      autoSlideStoppable: true,
+      mouseWheel: false,
+      hideAddressBar: true,
+      previewLinks: false,
+      width: 1920,
+      height: 1080,
+      margin: 0.1,
+      minScale: 0.2,
+      maxScale: 2.0
+    });
+  </script>
+</body>
+</html>

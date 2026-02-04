@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Android Emulator Configuration",
+  "type": "object",
+  "required": ["name", "device", "apiLevel", "systemImage", "arch"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name des AVD (Android Virtual Device)"
+    },
+    "device": {
+      "type": "string",
+      "description": "Hardware-Profil (z.B. pixel_7, pixel_6a, Nexus_5X)",
+      "enum": [
+        "pixel_7", "pixel_7_pro", "pixel_6", "pixel_6a", "pixel_5",
+        "pixel_4", "pixel_3a", "Nexus_5X", "Nexus_6P"
+      ]
+    },
+    "apiLevel": {
+      "type": "integer",
+      "description": "Android API Level",
+      "minimum": 21,
+      "maximum": 35
+    },
+    "systemImage": {
+      "type": "string",
+      "description": "System Image Typ",
+      "enum": ["google_apis", "google_apis_playstore", "default", "android-wear", "android-tv"]
+    },
+    "arch": {
+      "type": "string",
+      "description": "CPU-Architektur",
+      "enum": ["arm64-v8a", "x86_64", "x86"]
+    },
+    "ram": {
+      "type": "integer",
+      "description": "RAM in MB",
+      "default": 4096
+    },
+    "heap": {
+      "type": "integer",
+      "description": "VM Heap Size in MB",
+      "default": 576
+    },
+    "storage": {
+      "type": "string",
+      "description": "Internal Storage (z.B. 8G, 16G)",
+      "default": "8G"
+    },
+    "sdcard": {
+      "type": "string",
+      "description": "SD Card Größe (z.B. 512M, 1G)",
+      "default": "512M"
+    },
+    "gpu": {
+      "type": "string",
+      "description": "GPU-Modus",
+      "enum": ["auto", "host", "swiftshader_indirect", "off"],
+      "default": "auto"
+    },
+    "skin": {
+      "type": ["string", "null"],
+      "description": "Device Skin (optional)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Beschreibung des Emulators"
+    },
+    "properties": {
+      "type": "object",
+      "description": "Zusätzliche AVD Properties",
+      "additionalProperties": true
+    }
+  }
+}

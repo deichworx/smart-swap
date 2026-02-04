@@ -1,0 +1,23 @@
+{
+  "$schema": "./emulator.schema.json",
+  "name": "Solana_Seeker",
+  "device": "pixel_7",
+  "apiLevel": 34,
+  "systemImage": "google_apis",
+  "arch": "arm64-v8a",
+  "ram": 4096,
+  "heap": 576,
+  "storage": "8G",
+  "sdcard": "512M",
+  "gpu": "auto",
+  "skin": null,
+  "description": "Seeker-ähnliches Testgerät für Smart Swap Development",
+  "properties": {
+    "hw.lcd.density": 420,
+    "hw.lcd.width": 1080,
+    "hw.lcd.height": 2400,
+    "hw.keyboard": true,
+    "hw.gpu.enabled": true,
+    "hw.ramSize": 4096
+  }
+}
